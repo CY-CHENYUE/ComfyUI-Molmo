@@ -1,63 +1,79 @@
-This custom node for ComfyUI integrates a quantized version of the Molmo-7B-D model, allowing users to generate detailed image captions and analyses directly within their ComfyUI workflows.
+# ComfyUI-Molmo
 
-## Features
+使用molmo模型，在ComfyUI中实现图片描述，分析图片内容。可以把图片转文本的结果作为提示词生成图片。
 
-- Image captioning using a 4-bit quantized version of Molmo-7B-D
-- Support for both general description and detailed analysis
-- Custom prompt input option
-- Adjustable generation parameters (max tokens, temperature, top_k, top_p)
-- Automatic dependency installation
+## 功能
 
-## Installation
+- 使用Molmo-7B-D的4位量化版本进行图像描述
+- 支持一般描述和详细分析
+- 自定义提示输入选项
+- 可调节的生成参数(max tokens, temperature, top_k, top_p)
+- 图像到文本转换,可用于生成提示词
 
-1. Clone this repository into your ComfyUI `custom_nodes` directory:
+## 安装
+
+1. 在ComfyUI的管理器中搜索并安装"ComfyUI-Molmo"。
+
+2. 或者，也可以手动克隆此仓库到ComfyUI的`custom_nodes`目录:
 
    ```
    git clone https://github.com/CY-CHENYUE/ComfyUI-Molmo.git
    ```
 
-2. Restart ComfyUI. The node will automatically install its dependencies on first use.
+3. 重启ComfyUI。
 
-## Usage
+4. 依赖安装：
+   - 首次运行节点时，将自动下载并安装所需的依赖项。
+   - 注意：部分依赖可能需要重启ComfyUI后才能生效。如果遇到问题，请尝试重新启动ComfyUI。
 
-After installation, you can find the "Molmo 7B D bnb 4bit" node in the "Molmo" category in ComfyUI's node menu.
+5. 模型下载：
+   - 如果模型文件不存在，将在首次使用时自动下载。
+   - 由于模型文件较大，下载可能需要一些时间，请耐心等待。
 
-### Input Parameters
+注意：初次使用时，由于需要下载模型和安装依赖，启动时间可能会较长。后续使用将会更快。
 
-- `image`: The input image to be captioned or analyzed
-- `prompt_type`: Choose between "Describe" for general captioning or "Detailed Analysis" for a more comprehensive breakdown
-- `custom_prompt`: Optional. If provided, overrides the selected prompt type
-- `seed`: Seed for reproducibility (0 for random)
-- `max_new_tokens`: Maximum number of tokens to generate
-- `temperature`: Controls randomness in generation
-- `top_k`: Limits vocabulary for next-word selection
-- `top_p`: Nucleus sampling parameter
+## 使用
 
-### Output
+安装后,您可以在ComfyUI的节点菜单的"Molmo"类别中找到"Molmo 7B D bnb 4bit"节点。
 
-- `STRING`: The generated caption or analysis
+### 输入参数
 
-## Notes
+- `image`: 要描述或分析的输入图像
+- `prompt_type`: 选择"Describe"进行一般描述或"Detailed Analysis"进行更全面的分析
+- `custom_prompt`: 可选。如果提供,将覆盖选定的prompt_type
+- `seed`: 用于可重现性的种子
+- `max_new_tokens`: 生成的最大标记数
+- `temperature`: 控制生成的随机性
+- `top_k`: 限制下一个词选择的词汇表
+- `top_p`: 核采样参数
 
-- The model is automatically downloaded on first use if not already present
-- Requires a CUDA-capable GPU for optimal performance
-- Initial load time may be longer due to model size
+### 输出
 
-## Performance
+- `STRING`: 生成的描述或分析
 
-The original Molmo 7B-D model, which this quantized version is based on, has shown impressive performance:
+## 示例
 
-- Average Score on 11 Academic Benchmarks: 77.3
-- Human Preference Elo Rating: 1056
+![alt text](images/example1.png)
 
-These scores place it competitively among other large language models, including some versions of GPT-4 and Claude. For more detailed comparisons, please refer to the [original model's page](https://huggingface.co/allenai/Molmo-7B-D-0924).
+与Flux
+![alt text](images/example2.png)
 
-## Acknowledgements
+## 注意事项
 
-- [Original Molmo-7B-D model](https://huggingface.co/allenai/Molmo-7B-D-0924) by Allen Institute for AI
-- [Quantized Molmo-7B-D-bnb-4bit model](https://huggingface.co/cyan2k/molmo-7B-D-bnb-4bit) by cyan2k
-- [ComfyUI](https://github.com/comfyanonymous/ComfyUI) project
+- 如果模型不存在,将在首次使用时自动下载。国内环境可以通过网盘https://pan.quark.cn/s/882aea39f59c下载。放到ComfyUI/models。
+- 需要CUDA兼容的GPU以获得最佳性能
+- 由于模型大小,初始加载时间可能较长
 
-## Contributing
+## 性能
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+模型使用基于Molmo 7B-D的量化版本，可以降低显存的使用。
+
+## 致谢
+
+- Allen Institute for AI的[原始Molmo-7B-D模型](https://huggingface.co/allenai/Molmo-7B-D-0924)
+- cyan2k的[量化Molmo-7B-D-bnb-4bit模型](https://huggingface.co/cyan2k/molmo-7B-D-bnb-4bit)
+- [ComfyUI](https://github.com/comfyanonymous/ComfyUI)项目
+
+## 贡献
+
+欢迎贡献!请随时提交Pull Request.
