@@ -10,6 +10,6 @@ Repository = "https://github.com/CY-CHENYUE/ComfyUI-Molmo"
 #  Used by Comfy Registry https://comfyregistry.org
 
 [tool.comfy]
-PublisherId = ""
+PublisherId = "@cychenyue"
 DisplayName = "ComfyUI-Molmo"
 Icon = ""
