@@ -4,7 +4,7 @@
 
 ## 功能
 
-- 使用Molmo-7B-D的4位量化版本进行图像描述
+- 图像转文本
 - 支持一般描述和详细分析
 - 自定义提示输入选项
 - 可调节的生成参数(max tokens, temperature, top_k, top_p)
@@ -60,7 +60,7 @@
 
 ## 注意事项
 
-- 如果模型不存在,将在首次使用时自动下载。国内环境可以通过网盘https://pan.quark.cn/s/882aea39f59c下载。放到ComfyUI/models。
+- 如果模型不存在,将在首次使用时自动下载。国内环境可以通过网盘下载 https://pan.quark.cn/s/882aea39f59c 后放到ComfyUI/models。
 - 需要CUDA兼容的GPU以获得最佳性能
 - 由于模型大小,初始加载时间可能较长
 
