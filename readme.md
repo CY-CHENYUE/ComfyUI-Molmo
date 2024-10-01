@@ -52,7 +52,7 @@
 - `STRING`: 生成的描述或分析
 
 ## 示例
-<video controls src="images/molmo.mp4" title="Title"></video>
+<video controls src="images/molmo-v.mp4" title="Title"></video>
 
 ![alt text](images/MOLMO-CY-V1.png)
 
