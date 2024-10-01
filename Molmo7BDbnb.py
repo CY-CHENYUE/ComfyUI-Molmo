@@ -139,10 +139,8 @@ class Molmo7BDbnb:
         # 如果用户有输入，就用用户的输入
         if custom_prompt.strip():
             selected_prompt = custom_prompt
-            prompt_note = "\n[Note: Custom prompt was used, overriding the selected prompt type.]"
         else:
             selected_prompt = prompts[prompt_type]
-            prompt_note = ""
 
         # 延迟加载依赖和模型
         if self.device is None:
@@ -196,9 +194,6 @@ class Molmo7BDbnb:
         
         generated_tokens = output[0, inputs["input_ids"].size(1):]
         caption = self.processor.tokenizer.decode(generated_tokens, skip_special_tokens=True)
-        
-        # 添加提示注释
-        caption += prompt_note
         
         return (caption,)
 
