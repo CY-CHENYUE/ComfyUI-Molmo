@@ -52,11 +52,9 @@
 - `STRING`: 生成的描述或分析
 
 ## 示例
+<video controls src="images/molmo.mp4" title="Title"></video>
 
-![alt text](images/example1.png)
-
-与Flux
-![alt text](images/example2.png)
+![alt text](images/MOLMO-CY-V1.png)
 
 ## 注意事项
 
