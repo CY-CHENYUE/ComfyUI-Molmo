@@ -52,7 +52,11 @@
 - `STRING`: 生成的描述或分析
 
 ## 示例
-<video controls src="images/molmo-v.mp4" title="Title"></video>
+
+
+https://github.com/user-attachments/assets/173f44b2-ecc2-4218-b774-ce8aaa96d060
+
+
 
 ![alt text](images/MOLMO-CY-V1.png)
 
