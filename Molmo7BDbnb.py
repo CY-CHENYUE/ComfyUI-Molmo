@@ -30,6 +30,7 @@ class Molmo7BDbnb:
                 "temperature": ("FLOAT", {"default": 0.6, "min": 0.1, "max": 1.0, "step": 0.1}),
                 "top_k": ("INT", {"default": 40, "min": 1, "max": 100}),
                 "top_p": ("FLOAT", {"default": 0.9, "min": 0.1, "max": 1.0, "step": 0.05}),
+                "unload_model_after_generation": ("BOOLEAN", {"default": False}),
             },
         }
 
@@ -38,7 +39,7 @@ class Molmo7BDbnb:
     CATEGORY = "Molmo"
 
     @classmethod
-    def IS_CHANGED(s, image, prompt_type, custom_prompt, seed, max_new_tokens, temperature, top_k, top_p):
+    def IS_CHANGED(s, image, prompt_type, custom_prompt, seed, max_new_tokens, temperature, top_k, top_p, unload_model_after_generation):
         if seed == 0:
             return float("nan")  # Always re-run
         return seed  # Re-run when seed changes
@@ -104,10 +105,9 @@ class Molmo7BDbnb:
             if not os.path.exists(self.model_path) or not os.listdir(self.model_path):
                 print(f"Model not found locally. Downloading to {self.model_path}")
                 snapshot_download(repo_id=self.repo_name, local_dir=self.model_path)
-            else:
-                print(f"Model found locally at {self.model_path}")
-
-            print(f"Loading model from {self.model_path}")
+            # else:
+                # print(f"Model found locally at {self.model_path}")
+            # print(f"Loading model from {self.model_path}")
             self.processor = AutoProcessor.from_pretrained(self.model_path, **self.arguments)
             self.model = AutoModelForCausalLM.from_pretrained(self.model_path, **self.arguments)
 
@@ -129,73 +129,92 @@ class Molmo7BDbnb:
 
         return new_image
 
-    def generate_caption(self, image, prompt_type, custom_prompt, seed, max_new_tokens, temperature, top_k, top_p):
-        # 选择 prompt
-        prompts = {
-            "Describe": "Describe this image in detail.",
-            "Detailed Analysis": "Analyze this image, including its style, theme, scene, composition, lighting, and any additional notable information."
-        }
-        
-        # 如果用户有输入，就用用户的输入
-        if custom_prompt.strip():
-            selected_prompt = custom_prompt
-        else:
-            selected_prompt = prompts[prompt_type]
-
-        # 延迟加载依赖和模型
-        if self.device is None:
-            self.load_dependencies()
-        if self.model is None:
-            self.load_model()
-
-        if seed == 0:
-            seed = random.randint(0, 2**32 - 1)
-        else:
-            seed = seed % (2**32)  # 确保种子在有效范围内
-        
-        # 设置全局随机种子
-        random.seed(seed)
-        np.random.seed(seed)
-        torch.manual_seed(seed)
-        torch.cuda.manual_seed_all(seed)
-        
-        # 确保 CuDNN 使用确定性算法
-        torch.backends.cudnn.deterministic = True
-        torch.backends.cudnn.benchmark = False
-
-        processed_image = self.preprocess_image(image)
-        
-        inputs = self.processor.process(
-            images=[processed_image],
-            text=selected_prompt
-        )
-        
-        inputs = {k: v.to(self.model.device).unsqueeze(0) for k, v in inputs.items()}
-        
-        # 设置生成配置
-        generation_config = GenerationConfig(
-            max_new_tokens=max_new_tokens,
-            stop_strings="<|endoftext|>",
-            do_sample=True,  # 启用采样
-            temperature=temperature,
-            top_k=top_k,
-            top_p=top_p,
-        )
-        
-        # 使用 torch.Generator 设置随机状态
-        with torch.random.fork_rng(devices=[self.model.device]):
-            torch.random.manual_seed(seed)
+    def generate_caption(self, image, prompt_type, custom_prompt, seed, max_new_tokens, temperature, top_k, top_p, unload_model_after_generation):
+        try:
+            # 选择 prompt
+            prompts = {
+                "Describe": "Describe this image in detail.",
+                "Detailed Analysis": "Analyze this image, including its style, theme, scene, composition, lighting, and any additional notable information."
+            }
             
-            output = self.model.generate_from_batch(
-                inputs,
-                generation_config,
-                tokenizer=self.processor.tokenizer
+            # 如果用户有输入，就用用户的输入
+            if custom_prompt.strip():
+                selected_prompt = custom_prompt
+            else:
+                selected_prompt = prompts[prompt_type]
+
+            # 延迟加载依赖和模型
+            if self.device is None:
+                self.load_dependencies()
+            if self.model is None:
+                self.load_model()
+
+            if seed == 0:
+                seed = random.randint(0, 2**32 - 1)
+            else:
+                seed = seed % (2**32)  # 确保种子在有效范围内
+            
+            # 设置全局随机种子
+            random.seed(seed)
+            np.random.seed(seed)
+            torch.manual_seed(seed)
+            torch.cuda.manual_seed_all(seed)
+            
+            # 确保 CuDNN 使用确定性算法
+            torch.backends.cudnn.deterministic = True
+            torch.backends.cudnn.benchmark = False
+
+            processed_image = self.preprocess_image(image)
+            
+            inputs = self.processor.process(
+                images=[processed_image],
+                text=selected_prompt
             )
+            
+            inputs = {k: v.to(self.model.device).unsqueeze(0) for k, v in inputs.items()}
+            
+            # 设置生成配置
+            generation_config = GenerationConfig(
+                max_new_tokens=max_new_tokens,
+                stop_strings="<|endoftext|>",
+                do_sample=True,  # 启用采样
+                temperature=temperature,
+                top_k=top_k,
+                top_p=top_p,
+            )
+            
+            # 使用 torch.Generator 设置随机状态
+            with torch.random.fork_rng(devices=[self.model.device]):
+                torch.random.manual_seed(seed)
+                
+                output = self.model.generate_from_batch(
+                    inputs,
+                    generation_config,
+                    tokenizer=self.processor.tokenizer
+                )
+            
+            generated_tokens = output[0, inputs["input_ids"].size(1):]
+            caption = self.processor.tokenizer.decode(generated_tokens, skip_special_tokens=True)
+            
+            return (caption,)
+        finally:
+            if unload_model_after_generation:
+                self.unload_model()
+
+    def unload_model(self):
+        if self.model is not None:
+            del self.model
+            self.model = None
         
-        generated_tokens = output[0, inputs["input_ids"].size(1):]
-        caption = self.processor.tokenizer.decode(generated_tokens, skip_special_tokens=True)
+        if self.processor is not None:
+            del self.processor
+            self.processor = None
         
-        return (caption,)
+        # 清理CUDA缓存
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+        
+        print("Model and processor have been unloaded, and CUDA cache has been cleared.")
 
 NODE_CLASS_MAPPINGS = {
     "Molmo7BDbnb": Molmo7BDbnb
