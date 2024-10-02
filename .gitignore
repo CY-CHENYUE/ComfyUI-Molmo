@@ -4,3 +4,5 @@
      .env
      venv/
      .vscode/
+/__pycache__
+molmo_installation_status.json
