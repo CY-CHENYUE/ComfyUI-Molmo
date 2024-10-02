@@ -30,7 +30,7 @@ class Molmo7BDbnb:
                 "temperature": ("FLOAT", {"default": 0.6, "min": 0.1, "max": 1.0, "step": 0.1}),
                 "top_k": ("INT", {"default": 40, "min": 1, "max": 100}),
                 "top_p": ("FLOAT", {"default": 0.9, "min": 0.1, "max": 1.0, "step": 0.05}),
-                "unload_model_after_generation": ("BOOLEAN", {"default": False}),
+                "unload_model_after_generation": ("BOOLEAN", {"default": True}),
             },
         }
 
@@ -107,7 +107,7 @@ class Molmo7BDbnb:
                 snapshot_download(repo_id=self.repo_name, local_dir=self.model_path)
             # else:
                 # print(f"Model found locally at {self.model_path}")
-            # print(f"Loading model from {self.model_path}")
+            print(f"Loading model from {self.model_path}")
             self.processor = AutoProcessor.from_pretrained(self.model_path, **self.arguments)
             self.model = AutoModelForCausalLM.from_pretrained(self.model_path, **self.arguments)
 
