@@ -9,6 +9,7 @@
 - 自定义提示输入选项
 - 可调节的生成参数(max tokens, temperature, top_k, top_p)
 - 图像到文本转换,可用于生成提示词
+- 可选择在生成后自动卸载模型，释放GPU内存（对后续工作流中需要大量显存的会有帮助，但是会导致下次使用节点需要重新加载模型增加运行时间）
 
 ## 安装
 
@@ -46,6 +47,7 @@
 - `temperature`: 控制生成的随机性
 - `top_k`: 限制下一个词选择的词汇表
 - `top_p`: 核采样参数
+- `unload_model_after_generation`: 选择是否在生成后自动卸载模型以释放GPU内存
 
 ### 输出
 
@@ -65,6 +67,7 @@ https://github.com/user-attachments/assets/173f44b2-ecc2-4218-b774-ce8aaa96d060
 - 如果模型不存在,将在首次使用时自动下载。国内环境可以通过网盘下载 https://pan.quark.cn/s/882aea39f59c 后放到ComfyUI/models。
 - 需要CUDA兼容的GPU以获得最佳性能
 - 由于模型大小,初始加载时间可能较长
+- 使用 `unload_model_after_generation` 选项可以在生成后释放GPU内存，但可能会增加下次使用时的加载时间
 
 ## 性能
 
