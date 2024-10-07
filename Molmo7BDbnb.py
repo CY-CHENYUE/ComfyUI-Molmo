@@ -1,8 +1,9 @@
 import os
 import sys
-import importlib.util
+# import importlib.util
 import random
 import json
+import torch
 
 class Molmo7BDbnb:
     def __init__(self):
@@ -84,7 +85,7 @@ class Molmo7BDbnb:
                     raise Exception("Molmo dependencies have been installed. Please restart ComfyUI for the changes to take effect.")
                 
                 global torch, AutoModelForCausalLM, AutoProcessor, GenerationConfig, folder_paths, Image, ImageStat, np, snapshot_download
-                import torch
+                
                 from transformers import AutoModelForCausalLM, AutoProcessor, GenerationConfig
                 import folder_paths
                 from PIL import Image, ImageStat
