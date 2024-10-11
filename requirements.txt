@@ -1,7 +1,8 @@
 transformers >= 4.45.0
-torchvision >= 0.17
+torchvision >= 0.19.1
 huggingface_hub
 bitsandbytes
 accelerate >= 0.26.0
 numpy >= 1.24.4
+torch >= 2.4.1
 tensorflow
